@@ -1,8 +1,32 @@
 import numpy as np
 
+empty = 0
+
+bPawn = -1
+bRook = -2
+bKnight = -3
+bBishop = -4
+bQueen = -5
+bKing = -6
+
+wPawn = 1
+wRook = 2
+wKnight = 3
+wBishop = 4
+wQueen = 5
+wKing = 6
+
+
 class Board:
 
-    __board = np.array([[2,3,4,5,6,4,3,2],[1,1,1,1,1,1,1,1],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[-1,-1,-1,-1,-1,-1,-1,-1],[-2,-3,-4,-5,-6,-4,-3,-2]])
+    __board = np.array([[2,3,4,5,6,4,3,2],
+                        [1,1,1,1,1,1,1,1],
+                        [0,0,0,0,0,0,0,0],
+                        [0,0,0,0,0,0,0,0],
+                        [0,0,0,0,0,0,0,0],
+                        [0,0,0,0,0,0,0,0],
+                        [-1,-1,-1,-1,-1,-1,-1,-1],
+                        [-2,-3,-4,-5,-6,-4,-3,-2]])
 
     def print(self):
         for i in range(0,8,1):
@@ -22,12 +46,11 @@ class Board:
         return True
 
 
-
 board = Board()
-board.update()
+board.print()
 board.update(0, 0, 7, 7)
-board.update()
+board.print()
 
 val = board.update(10, 0, 7, 7)
-board.update()
-print (val)
+board.print()
+print(val)
