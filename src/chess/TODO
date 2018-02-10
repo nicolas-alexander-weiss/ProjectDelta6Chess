@@ -1,7 +1,5 @@
 open:
 
-- applying moves
-
 - returning valid moves / move generator
 
 
@@ -14,4 +12,5 @@ open:
 
 Done:
 
+(02/10/18) moveFunction, capture for invalid
 (02/10/18) Board representation
