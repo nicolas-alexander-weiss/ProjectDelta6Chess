@@ -1,0 +1,17 @@
+open:
+
+- applying moves
+
+- returning valid moves / move generator
+
+
+- developing NN
+- > inputting board representation into NN
+- > fining cost function board.
+
+- or maybe only classification algorithm?
+
+
+Done:
+
+(02/10/18) Board representation
