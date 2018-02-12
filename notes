@@ -1,0 +1,17 @@
+02/12/18:
+
+- Don't implement complete chess computer from scratch
+==> use of chess engine for python
+
+- AI:
+    -> Evaluation of moves and not for outputting moves
+    -> Engine will generate moves and AI will tell, whether move is good
+    -> Chose Move with the highest ranking
+
+- NN:
+-- Input - current board
+-- Output - binary, whether will lead to victory or not
+
+
+
+(Anand: Whatever can be solved using a database system can be solved using a neural network)
