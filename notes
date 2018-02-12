@@ -6,7 +6,7 @@
 - AI:
     -> Evaluation of moves and not for outputting moves
     -> Engine will generate moves and AI will tell, whether move is good
-    -> Chose Move with the highest ranking
+    -> Choose Move with the highest ranking
 
 - NN:
 -- Input - current board
