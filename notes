@@ -9,9 +9,24 @@
     -> Choose Move with the highest ranking
 
 - NN:
--- Input - current board
+-- Input - current board and move
 -- Output - binary, whether will lead to victory or not
 
+----
+---
+--
+    Idea: Not necessary to input the move AND the state of the board
+        --> better just input resulting board and evaluate that!
+        --> Also needs to input the color of the person at turn
+            ==> BETTER: always have NN output percentage of WHITE to win
 
+QUESTION:   - Are the moves of BLACK necessary for WHITE to win?
 
+    Training Process:
+        --> Have Engine generate games and moves
+        --> Create log of board positions and save whether WHITE or BLACK won
+        --> Train NN with every board position and the label 0 (WHITE lost) or 1 (WHITE won)
+--
+---
+----
 (Anand: Whatever can be solved using a database system can be solved using a neural network)
