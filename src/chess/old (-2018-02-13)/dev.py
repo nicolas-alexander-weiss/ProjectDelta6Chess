@@ -53,8 +53,8 @@ class Board:
         for i in range(0,8,1):
             for j in range(0,8,1):
                 piece = self.__board[i][j]
-                if color == BLACK and piece >= BLACK * KING and piece <= BLACK * PAWN
-                    or color == WHITE and piece >= WHITE * PAWN and piece <= BLACK * PAWN :
+                if color == BLACK and piece >= BLACK * KING and piece <= BLACK * PAWN \
+                        or color == WHITE and piece >= WHITE * PAWN and piece <= BLACK * PAWN :
                     if piece == color * PAWN:
                         if(self.__board[i + color][j] == EMPTY):
                             pm.append(np.array([i,j,i + color,j]))
