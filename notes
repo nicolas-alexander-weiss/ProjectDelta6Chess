@@ -1,3 +1,7 @@
+02/15/18:
+
+- need to use np.dot(a,b) for performing matrix multiplication!!!
+
 02/12/18:
 
 - Don't implement complete chess computer from scratch
