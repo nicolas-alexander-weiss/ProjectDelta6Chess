@@ -68,12 +68,15 @@ class NeuralNetwork:
 
         return activation
 
+
+
+
     @staticmethod
     def sigmoid(x):
         return 1 / (1 + math.exp(x))
-
-    def sigmoid_d1(self, x):
-        return self.sigmoid(x) * (1 - self.sigmoid(x))
+    @staticmethod
+    def sigmoid_d1(x):
+        return NeuralNetwork.sigmoid(x) * (1 - NeuralNetwork.sigmoid(x))
 
 
 a = np.ones((1, 2))
