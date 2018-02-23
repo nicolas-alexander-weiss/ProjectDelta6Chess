@@ -125,9 +125,12 @@ class NeuralNetwork:
 
         return [cost, gradients]
 
-    # OUTPUT: [COST, GRADIENTS]
-    def cost(self, X, y, lambd):
+    # OUTPUT: COST
+    def cost(self, X, y, lambd, thetas = 0):
         # y_matrix = np.eye(self.size[len(self.size)-1])
+
+        if thetas == 0:
+            thetas = self.thetas
 
         m, n = np.shape(X)
         num_layers = len(self.size)
@@ -136,8 +139,8 @@ class NeuralNetwork:
         weighted_input = []
         activations.append(np.hstack((np.ones((m, 1)), X)))
         # feedforward
-        for i in range(0,len(self.thetas),1):
-            z = np.dot(activations[i], np.transpose(self.thetas[i]))
+        for i in range(0,len(thetas),1):
+            z = np.dot(activations[i], np.transpose(thetas[i]))
             weighted_input.append(z)
 
             a = np.hstack((np.ones((m, 1)), self.vect_sigmoid(z)))
@@ -151,11 +154,37 @@ class NeuralNetwork:
         # add regularization
         if lambd != 0:
             theta_square_sum = 0
-            for theta in self.thetas:
+            for theta in thetas:
                 theta_square_sum += sum(theta * theta)
             cost += (lambd / m / 2) * theta_square_sum
 
         return cost
+
+    def numerical_gradient(self, X, y, lambd):
+        num_grads = []
+
+        epsilon = 1e-4
+        for i in range(0,len(self.thetas),1):
+
+            shape = np.shape(self.thetas[i])
+            num_grads += np.zeros(shape)
+
+            for j in range(0,shape[0],1):
+                for k in range(0,shape[1],1):
+                    self.thetas[i][j][k] -= epsilon
+                    loss1 = self.cost(X, y, lambd)
+
+                    self.thetas[i][j][k] += 2 * epsilon
+                    loss2 = self.cost(X, y, lambd)
+
+                    self.thetas[i][j][k] -= epsilon
+
+                    num_grad = (loss2 - loss1) / (2 * epsilon)
+
+                    num_grads[-1][j][k] = num_grad
+
+        return num_grads
+
 
     def sigmoid(self, x):
         return 1 / (1 + math.exp(x))
