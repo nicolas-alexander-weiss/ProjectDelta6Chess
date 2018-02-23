@@ -22,6 +22,12 @@ class NeuralNetwork:
     size = []
 
     def __init__(self, *args):
+
+        ## defining vectorized functions
+
+        self.vect_sigmoid = np.vectorize(self.sigmoid)
+        self.vect_sigmoid_d1 = np.vectorize(self.sigmoid_d1)
+
         if type(args[0]) is np.ndarray:
             # copy thetas from args
             for i in range(0, len(args), 1):
@@ -52,6 +58,7 @@ class NeuralNetwork:
 
     def feed_forward(self, x):
 
+
         activation = np.array(x)
 
         # raising several exceptions
@@ -64,23 +71,71 @@ class NeuralNetwork:
         # perform feed forward. a: activation of current layer
 
         for theta in self.thetas:
-            activation = self.sigmoid(np.dot(theta, np.append([1], activation)))
+            activation = self.vect_sigmoid(np.dot(theta, np.append([1], activation)))
 
         return activation
 
 
+# X is element of R(m x n), m = num_training_examples, n = num_features
+    # if m = 1, X needs to be 1 x n matrix and not just np.vector/array
+    # NOT YET WORKING FOR MULTICLASS CLASSIFICATION!!!
+
+    # OUTPUT: [COST, GRADIENTS]
+    def cost_grad(self, X, y, lambd):
+        # y_matrix = np.eye(self.size[len(self.size)-1])
+
+        m, n = np.shape(X)
+        num_layers = len(self.size)
+
+        activations = []
+        weighted_input = []
+        activations.append(np.hstack((np.ones((m, 1))), X))
+        # feedforward
+        for i in range(0,len(self.thetas),1):
+            z = np.dot(activations[i], np.transpose(self.thetas[i]))
+            weighted_input.append(z)
+
+            a = np.hstack((np.ones((m, 1))), self.vect_sigmoid(z))
+            activations.append(a)
+
+        activations[-1] = activations[-1][:,1:]
+
+        cost = -(1/m) * np.sum(np.log(activations[-1])*y
+                               + np.log(1 - activations[len(activations) - 1]*(1-y)))
+
+        # add regularization
+        if(lambd != 0):
+            theta_square_sum = 0;
+            for theta in self.thetas:
+                theta_square_sum += sum(theta * theta)
+            cost += (lambd / m / 2) * theta_square_sum
+
+        # backpropagation
+
+        rel_errors = [activations[-1] - y]
+        for i in range(num_layers - 2, 0, -1):
+            rel_error = np.dot(rel_errors[0], self.thetas[i]) * self.vect_sigmoid_d1(weighted_input[i])
+            rel_errors = rel_error + rel_errors
+
+        gradients = []
+        for i in range(0, len(self.thetas)):
+            grad = (np.dot(np.transpose(rel_errors[i]), activations[i])
+                    + np.hstack((np.zeros((self.size[i+1], 1)), lambd * self.thetas[i][:, 2:]))) / m
+            gradients += grad
+
+        return [cost, gradients]
 
 
-    @staticmethod
-    def sigmoid(x):
+
+    def sigmoid(self, x):
         return 1 / (1 + math.exp(x))
-    @staticmethod
-    def sigmoid_d1(x):
+
+    def sigmoid_d1(self, x):
         return NeuralNetwork.sigmoid(x) * (1 - NeuralNetwork.sigmoid(x))
 
 
 a = np.ones((1, 2))
-b = np.ones((1, 2))
+b = np.ones((10, 2))
 
 # print(len(c[0]))
 
@@ -88,5 +143,4 @@ nn = NeuralNetwork(a,b)
 
 activation = nn.feed_forward(np.array([1]))
 
-print(activation)
-print(nn.sigmoid(1 + nn.sigmoid(2)))
+print (nn.size)
