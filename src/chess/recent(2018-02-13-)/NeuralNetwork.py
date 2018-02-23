@@ -23,8 +23,7 @@ class NeuralNetwork:
 
     def __init__(self, *args):
 
-        ## defining vectorized functions
-
+        # defining vectorized functions
         self.vect_sigmoid = np.vectorize(self.sigmoid)
         self.vect_sigmoid_d1 = np.vectorize(self.sigmoid_d1)
 
@@ -88,13 +87,13 @@ class NeuralNetwork:
 
         activations = []
         weighted_input = []
-        activations.append(np.hstack((np.ones((m, 1))), X))
+        activations.append(np.hstack((np.ones((m, 1)), X)))
         # feedforward
         for i in range(0,len(self.thetas),1):
             z = np.dot(activations[i], np.transpose(self.thetas[i]))
             weighted_input.append(z)
 
-            a = np.hstack((np.ones((m, 1))), self.vect_sigmoid(z))
+            a = np.hstack((np.ones((m, 1)), self.vect_sigmoid(z)))
             activations.append(a)
 
         activations[-1] = activations[-1][:,1:]
@@ -104,7 +103,7 @@ class NeuralNetwork:
 
         # add regularization
         if lambd != 0:
-            theta_square_sum = 0;
+            theta_square_sum = 0
             for theta in self.thetas:
                 theta_square_sum += sum(theta * theta)
             cost += (lambd / m / 2) * theta_square_sum
@@ -126,19 +125,51 @@ class NeuralNetwork:
 
         return [cost, gradients]
 
+    # OUTPUT: [COST, GRADIENTS]
+    def cost(self, X, y, lambd):
+        # y_matrix = np.eye(self.size[len(self.size)-1])
+
+        m, n = np.shape(X)
+        num_layers = len(self.size)
+
+        activations = []
+        weighted_input = []
+        activations.append(np.hstack((np.ones((m, 1)), X)))
+        # feedforward
+        for i in range(0,len(self.thetas),1):
+            z = np.dot(activations[i], np.transpose(self.thetas[i]))
+            weighted_input.append(z)
+
+            a = np.hstack((np.ones((m, 1)), self.vect_sigmoid(z)))
+            activations.append(a)
+
+        activations[-1] = activations[-1][:,1:]
+
+        cost = -(1/m) * np.sum(np.log(activations[-1])*y
+                               + np.log(1 - activations[len(activations) - 1]*(1-y)))
+
+        # add regularization
+        if lambd != 0:
+            theta_square_sum = 0
+            for theta in self.thetas:
+                theta_square_sum += sum(theta * theta)
+            cost += (lambd / m / 2) * theta_square_sum
+
+        return cost
+
     def sigmoid(self, x):
         return 1 / (1 + math.exp(x))
 
     def sigmoid_d1(self, x):
-        return NeuralNetwork.sigmoid(x) * (1 - NeuralNetwork.sigmoid(x))
+        return self.sigmoid(x) * (1 - self.sigmoid(x))
 
 
-a = np.ones((1, 2))
-b = np.ones((10, 2))
+theta1 = np.ones((1, 2))
+theta2 = np.ones((10, 2))
 
 # print(len(c[0]))
 
-nn = NeuralNetwork(a,b)
+nn = NeuralNetwork(theta1, theta2)
 
 activation = nn.feed_forward(np.array([1]))
 
