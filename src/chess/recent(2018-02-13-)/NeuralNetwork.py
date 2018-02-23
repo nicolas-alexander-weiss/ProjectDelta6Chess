@@ -58,7 +58,6 @@ class NeuralNetwork:
 
     def feed_forward(self, x):
 
-
         activation = np.array(x)
 
         # raising several exceptions
@@ -104,7 +103,7 @@ class NeuralNetwork:
                                + np.log(1 - activations[len(activations) - 1]*(1-y)))
 
         # add regularization
-        if(lambd != 0):
+        if lambd != 0:
             theta_square_sum = 0;
             for theta in self.thetas:
                 theta_square_sum += sum(theta * theta)
@@ -119,13 +118,13 @@ class NeuralNetwork:
 
         gradients = []
         for i in range(0, len(self.thetas)):
-            grad = (np.dot(np.transpose(rel_errors[i]), activations[i])
-                    + np.hstack((np.zeros((self.size[i+1], 1)), lambd * self.thetas[i][:, 2:]))) / m
+            grad = np.dot(np.transpose(rel_errors[i]), activations[i])
+            if lambd != 0:
+                grad += np.hstack((np.zeros((self.size[i+1], 1)), lambd * self.thetas[i][:, 2:]))
+            grad /= m
             gradients += grad
 
         return [cost, gradients]
-
-
 
     def sigmoid(self, x):
         return 1 / (1 + math.exp(x))
