@@ -82,7 +82,7 @@ class NeuralNetwork:
     # NOT YET WORKING FOR MULTICLASS CLASSIFICATION!!!
 
     # OUTPUT: [COST, GRADIENTS]
-    def cost_grad(self, X, y, lambd):
+    def cost_grad(self, X, y, lambd, only_cost = 0):
         # y_matrix = np.eye(self.size[len(self.size)-1])
 
         m, n = np.shape(X)
@@ -111,6 +111,9 @@ class NeuralNetwork:
                 theta_square_sum += sum(theta * theta)
             cost += (lambd / m / 2) * theta_square_sum
 
+        if only_cost == 1:
+            return cost
+
         # backpropagation
 
         rel_errors = []
@@ -133,38 +136,6 @@ class NeuralNetwork:
             gradients.append(grad)
 
         return [cost, gradients]
-
-    # OUTPUT: COST
-    def cost(self, X, y, lambd, thetas = 0):
-        # y_matrix = np.eye(self.size[len(self.size)-1])
-
-        m, n = np.shape(X)
-        num_layers = len(self.size)
-
-        activations = []
-        weighted_input = []
-        activations.append(np.hstack((np.ones((m, 1)), X)))
-        # feedforward
-        for i in range(0, len(self.thetas), 1):
-            z = np.dot(activations[i], np.transpose(self.thetas[i]))
-            weighted_input.append(z)
-
-            a = np.hstack((np.ones((m, 1)), self.vect_sigmoid(z)))
-            activations.append(a)
-
-        activations[-1] = activations[-1][:, 1:]
-
-        cost = -(1 / m) * np.sum(np.log(activations[-1]) * y
-                                 + np.log(1 - activations[len(activations) - 1] * (1 - y)))
-
-        # add regularization
-        if lambd != 0:
-            theta_square_sum = 0
-            for theta in self.thetas:
-                theta_square_sum += sum(theta * theta)
-            cost += (lambd / m / 2) * theta_square_sum
-
-        return cost
 
 
     def numerical_gradient(self, X, y, lambd):
