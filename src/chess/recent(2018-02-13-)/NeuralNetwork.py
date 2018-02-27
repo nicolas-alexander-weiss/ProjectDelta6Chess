@@ -150,10 +150,10 @@ class NeuralNetwork:
             for j in range(0,shape[0],1):
                 for k in range(0,shape[1],1):
                     self.thetas[i][j][k] -= epsilon
-                    loss1 = self.cost(X, y, lambd)
+                    loss1 = self.cost_grad(X, y, lambd, only_cost = 1)
 
                     self.thetas[i][j][k] += 2 * epsilon
-                    loss2 = self.cost(X, y, lambd)
+                    loss2 = self.cost_grad(X, y, lambd, only_cost = 1)
 
                     self.thetas[i][j][k] -= epsilon
 
