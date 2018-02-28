@@ -1,6 +1,6 @@
 import numpy as np
 import math
-
+import matplotlib.pyplot as plt
 
 #
 # constructor_a: create neural_network of size (n1,n2,...,nk) ,
@@ -49,7 +49,6 @@ class NeuralNetwork:
                 self.size.append(len(self.thetas[i][0]) - 1)
             self.size.append(len(self.thetas[len(args) - 1]))  # since index i accounts for neur. in layer (i - 1)
 
-
         if type(args[0]) is int:
             # create arrays of Theta in accordance with the number of neurons per layer.
             for i in range(0, len(args) - 1, 1):
@@ -57,6 +56,7 @@ class NeuralNetwork:
                 self.size.append(args[i])
             self.size.append(args[len(args) - 1])  # since last index in loop only goes to len - 2
 
+# Be careful with use! Should be rewritten by
     def feed_forward(self, x):
 
         activation = np.array(x)
@@ -82,33 +82,47 @@ class NeuralNetwork:
     # NOT YET WORKING FOR MULTICLASS CLASSIFICATION!!!
 
     # OUTPUT: [COST, GRADIENTS]
-    def cost_grad(self, X, y, lambd, only_cost = 0):
+    def cost_grad(self, X, y, lambd, only_cost=0):
         # y_matrix = np.eye(self.size[len(self.size)-1])
 
         m, n = np.shape(X)
-        num_layers = len(self.size)
 
+        # print("m, n", m,n)
+        num_layers = len(self.size)
+        # print("numLayers:",num_layers)
         activations = []
         weighted_input = []
         activations.append(np.hstack((np.ones((m, 1)), X)))
+
         # feedforward
-        for i in range(0,len(self.thetas),1):
+        for i in range(0,len(self.thetas), 1):
             z = np.dot(activations[i], np.transpose(self.thetas[i]))
             weighted_input.append(z)
 
             a = np.hstack((np.ones((m, 1)), self.vect_sigmoid(z)))
             activations.append(a)
 
-        activations[-1] = activations[-1][:,1:]
+        print("activations: ", activations)
 
+        activations[-1] = activations[-1][:, 1:]
+        # print("activations: ")
+        #for a in activations:
+        #    print(a)
         cost = -(1/m) * np.sum(np.log(activations[-1])*y
-                               + np.log(1 - activations[len(activations) - 1]*(1-y)))
+                               + np.log(1 - activations[-1])*(1-y))
 
+        # print("cost: ", cost)
+
+        """
+        print("np.log(activations[-1])*y\n", np.log(activations[-1])*y)
+        print("np.log(1 - activations[-1]*(1-y))\n", np.log(1 - activations[-1])*(1-y))
+        print("Cost", cost)
+        """
         # add regularization
         if lambd != 0:
             theta_square_sum = 0
             for theta in self.thetas:
-                theta_square_sum += sum(theta * theta)
+                theta_square_sum += sum((theta * theta)[:,1:])
             cost += (lambd / m / 2) * theta_square_sum
 
         if only_cost == 1:
@@ -125,11 +139,15 @@ class NeuralNetwork:
             rel_error = np.dot(rel_errors[0], self.thetas[i][:, 1:]) * self.vect_sigmoid_d1(weighted_input[i])
             rel_errors.insert(0, rel_error)
 
-        #print(rel_errors)
+
+        # print("rel_errors", rel_errors)
 
         gradients = []
         for i in range(0, len(self.thetas),1):
             grad = np.dot(np.transpose(rel_errors[i]), activations[i])
+            # print("rel_errors[i]", rel_errors[i])
+            # print("activations[i]", activations[i])
+            # print("grad", grad)
             if lambd != 0:
                 grad += np.hstack((np.zeros((self.size[i+1], 1)), lambd * self.thetas[i][:, 2:]))
             grad /= m
@@ -139,6 +157,23 @@ class NeuralNetwork:
 
 
     def numerical_gradient(self, X, y, lambd):
+        """
+        # Do Test Plot:
+
+        x_data = []
+        y_data = []
+
+        #print("THETAS:", np.shape(self.thetas))
+        self.thetas[1][0][1] -= 5
+        for i in range(0,100,1):
+            x_data.append(i * 0.01)
+            self.thetas[1][0][1] += 0.01
+            y_data.append(self.cost_grad(X,y,lambd, 1))
+        self.thetas[1][0][1] -= 5
+
+        plt.plot(x_data, y_data)
+        plt.show()
+        """
         num_grads = []
 
         epsilon = 1e-5
@@ -147,22 +182,26 @@ class NeuralNetwork:
             shape = np.shape(self.thetas[i])
             num_grads.append(np.zeros(shape))
 
-            for j in range(0,shape[0],1):
-                for k in range(0,shape[1],1):
+            for j in range(0, shape[0],1):
+                for k in range(0, shape[1],1):
+                    # print("i, self.thetas[i]", i, self.thetas[i])
+
                     self.thetas[i][j][k] -= epsilon
-                    loss1 = self.cost_grad(X, y, lambd, only_cost = 1)
+                    loss1 = self.cost_grad(X, y, lambd, only_cost=1)
+                    # print("i, self.thetas[i]", i, self.thetas[i])
 
                     self.thetas[i][j][k] += 2 * epsilon
-                    loss2 = self.cost_grad(X, y, lambd, only_cost = 1)
+                    loss2 = self.cost_grad(X, y, lambd, only_cost=1)
+                    # print("i, self.thetas[i]", i, self.thetas[i])
 
                     self.thetas[i][j][k] -= epsilon
+                    # print("i, self.thetas[i]", i, self.thetas[i])
 
                     num_grad = (loss2 - loss1) / (2 * epsilon)
-
+                    # print("i,j,k: numgrad",i, j, k, num_grad)
                     num_grads[-1][j][k] = num_grad
 
         return num_grads
-
 
     def sigmoid(self, x):
         return 1 / (1 + math.exp(x))
@@ -171,8 +210,8 @@ class NeuralNetwork:
         return self.sigmoid(x) * (1 - self.sigmoid(x))
 
 
-theta1 = np.ones((1, 2))
-theta2 = np.ones((1, 2))
+theta1 = np.ones((1, 2)) # np.random.rand(1, 2) # np.ones((1,2))
+theta2 = np.ones((1, 2)) # np.random.rand(1, 2) # np.ones((1,2))
 
 # print(len(c[0]))
 
@@ -192,7 +231,7 @@ print("Thetas: ")
 for theta in nn.thetas:
     print(theta)
 
-print("Thetas[0][:,2:]", nn.thetas[0][:,1:])
+# print("Thetas[0][:,1:]", nn.thetas[0][:,1:])
 
 print("Cost: ", cost)
 
@@ -200,11 +239,11 @@ print("Gradients: ")
 for grad in grads:
     print(grad)
 
+
+
 num_grads = nn.numerical_gradient(training_X, training_Y, 0)
 
 print("Num_Gradients")
 for num_grad in num_grads:
     print(num_grad)
-
-
 

@@ -1,3 +1,13 @@
+02/28/18:
+
+- Development of NeuralNetwork class seems to be stuck.
+--> Should switch to use of TensorFlow and then focus on data generation and training.
+
+About the training:
+- Board which represent chess mate should be trained over more iterations, so that NN can almost 100% flawlessly predict
+    the winner in a chess mate situation
+
+
 02/15/18:
 
 - need to use np.dot(a,b) for performing matrix multiplication!!!
