@@ -23,8 +23,19 @@ def board_to_vector(board):
 
 
 
-
+"""
 board = chess.Board()
 
-print(board_to_vector(board))
+print(board)
 
+board.push_san("e4")
+print(board)
+
+print(board_to_vector(board))
+"""
+
+boards_resign = np.load("boards_resign.npy")
+
+print(boards_resign[:,64])
+
+print("done")
