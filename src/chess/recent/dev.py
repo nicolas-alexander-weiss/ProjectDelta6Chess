@@ -1,32 +1,50 @@
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 import numpy as np
+
+import time
 
 import chess
 import chess.svg
 
-board = chess.Board()
+from sklearn.neural_network import MLPClassifier
+from sklearn.externals import joblib
 
-board.push_san("b4")
-board.push_san("Na6")
-print(board)
+def print_board_to_file():
+    board = chess.Board()
+
+    board.push_san("b4")
+    board.push_san("Na6")
+    print(board)
+
+    file = open("current_board.html", "w")
+
+    print_this = "<html><head><meta http-equiv='refresh' content='5'></head><body>"\
+                 + chess.svg.board(board) + "</body></html>"
+
+    file.write(print_this)
+
+    file.close()
+
+def try_sklearn():
+
+    boards_mate = np.load("boards_mate.npy")
 
 
+    X = boards_mate[0:100,1:]
+    y = boards_mate[0:100,0]
 
-file = open("current_board.html", "w")
+    print("size ", len(boards_mate))
 
-printthis = '''
-<html>
-<head><meta http-equiv="refresh" content="5"></head>
+    print("Start Training")
+    clf = MLPClassifier(solver="adam", alpha=0.0001, hidden_layer_sizes=(100,100,100), random_state=1)
 
-<body>''' + chess.svg.board(board) + ''''</body>
+    start = time.time()
+    clf.fit(X,y)
+    end = time.time()
+    print("Training Done,", end-start, "seconds.")
 
-</html>'''
+    # print(clf.get_params())
+    # print("coefs_\n",clf.coefs_)
+    # print("intercepts_\n", clf.intercepts_)
 
 
-
-file.write(printthis)
-
-
-
-file.close()
+try_sklearn()

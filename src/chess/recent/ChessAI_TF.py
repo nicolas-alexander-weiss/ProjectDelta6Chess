@@ -17,26 +17,30 @@ class ChessAI:
         self.classifier = tf.estimator.DNNClassifier(
             feature_columns=self.feature_columns,
             hidden_units=[64,64,64],
-            n_classes=1
+            n_classes=2
         )
 
         pass
 
     # Takes the 2D designmatrix as the the features
-    # and the labels are a vector of corresponding labels
+    # and the labels as a vector of corresponding labels
     @staticmethod
-    def train_input_fn(features, labels):
+    def train_input_fn(features, labels, batch_size):
 
         features_dict = {"field" + str(i+1) : features[:,i] for i in range(0,64,1)}
 
         # Return the dataset.
-        return (features_dict, labels)
+        dataset = tf.data.Dataset.from_tensor_slices((features_dict, labels))
+
+        dataset = dataset.shuffle(1000).repeat().batch(batch_size)
+
+        return dataset
 
     def train_tensor_flow_model(self, game_data):
-        X, y = self.map_data(game_data)
-        # self.classifier.train(
-        # input_fn=lambda:self.train_input_fn(train_feature, train_label, 100),
-        # steps=1000)
+        train_features, train_labels = self.map_data(game_data)
+        self.classifier.train(
+            input_fn=lambda:self.train_input_fn(train_features, train_labels, 100),
+            steps=1000)
 
 
     # DATASET: EACH ROW, [1/0, x1,x2,...,x64].  1-> white one, 0-> black won.
@@ -46,8 +50,16 @@ class ChessAI:
         y = game_data[:,0]
         X = game_data[:,1:]
 
-        pass
+        return X,y
 
     # game methods:
     def evaluate_board(self, board):
         pass
+
+
+if __name__ == "__main__":
+    boards_resign = np.load("boards_resign.npy")
+
+    chessAI = ChessAI()
+
+    chessAI.train_tensor_flow_model(boards_resign)
