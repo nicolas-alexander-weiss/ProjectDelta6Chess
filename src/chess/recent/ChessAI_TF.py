@@ -1,3 +1,13 @@
+#
+#
+# No longer under development! -> now on SKLEARN!, see seperate file
+#
+#
+
+
+
+
+
 import chess
 import numpy as np
 import tensorflow as tf
