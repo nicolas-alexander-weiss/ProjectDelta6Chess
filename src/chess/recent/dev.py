@@ -13,6 +13,7 @@ def print_board_to_file():
 
     board.push_san("b4")
     board.push_san("Na6")
+    board.push_san("e4")
     print(board)
 
     file = open("current_board.html", "w")
@@ -47,4 +48,4 @@ def try_sklearn():
     # print("intercepts_\n", clf.intercepts_)
 
 
-try_sklearn()
+print_board_to_file()

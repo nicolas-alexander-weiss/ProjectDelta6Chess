@@ -18,3 +18,11 @@ def board_to_vector(board):
 
     return board_vect
 
+def vector_to_board(vector):
+    if len(vector) != 64:
+        return None
+    board_string = ""
+    for i in range(0,64,1):
+        if vector[i] == 0:
+            board_string += ""
+    board_string +=  "w KQkq - 0 1"

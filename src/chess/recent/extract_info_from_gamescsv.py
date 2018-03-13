@@ -2,8 +2,8 @@ import csv
 import chess
 import numpy as np
 import os
-
 import src.chess.recent.ChessUtils as ChessUtils
+
 
 from settings import PROJECT_ROOT
 
