@@ -58,9 +58,9 @@ class ChessAI:
         temp_iter = self.clf.get_params()["max_iter"]
         if manual:
             self.clf.set_params(max_iter=max_itr)
-
-        print("begin training")
-        beg = time.time()
+        if self.clf.verbose:
+            print("begin training")
+            beg = time.time()
         if not manual:
             self.clf.fit(X, y)
         else:
@@ -70,8 +70,9 @@ class ChessAI:
             for i in range(num_batches):
                 print("ex",i, "of", num_batches)
                 self.clf.fit(x_batches[i], y_batches[i])#.reshape((1,-1)),y_batches[i].reshape((1,-1)))
-        end = time.time()
-        print("done training,", end-beg, "sec")
+        if self.clf.verbose:
+            end = time.time()
+            print("done training,", end-beg, "sec")
 
         self.clf.set_params(max_iter=temp_iter)
 
