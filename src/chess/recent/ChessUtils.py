@@ -26,3 +26,7 @@ def vector_to_board(vector):
         if vector[i] == 0:
             board_string += ""
     board_string +=  "w KQkq - 0 1"
+
+if __name__ == "__main__":
+    board = chess.Board()
+    print(board_to_vector(board))
