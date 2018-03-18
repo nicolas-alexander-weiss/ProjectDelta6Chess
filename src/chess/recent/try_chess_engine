@@ -2,6 +2,7 @@ import chess
 import numpy as np
 import csv
 
+
 # ROOK 4, KNIGHT 2, BISHOP 3, QUEEN 5, KING 6, PAWN 1
 # DIFFERS FROM MY FORMER DEFINITION!
 
@@ -22,20 +23,6 @@ def board_to_vector(board):
     return board_vect
 
 
+data =  np.load("gamedata/boards_draw.npy")
 
-"""
-board = chess.Board()
-
-print(board)
-
-board.push_san("e4")
-print(board)
-
-print(board_to_vector(board))
-"""
-
-boards_resign = np.load("boards_resign.npy")
-
-print(boards_resign[:,64])
-
-print("done")
+print(data)

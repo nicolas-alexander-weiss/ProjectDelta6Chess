@@ -11,7 +11,7 @@ import numpy as np
 
 import src.chess.recent.ChessUtils as ChessUtils
 
-nn_params = {"hdl_sizes": (100, 100, 100),
+nn_params = {"hdl_sizes": (100,100,100),
              "activation": "logistic",
              "solver": "adam",
              "alpha": 0.00001,  # regularization parameter!
@@ -22,11 +22,12 @@ nn_params = {"hdl_sizes": (100, 100, 100),
 
 stats_index = {"num_trained_examples": 0}
 
+
 class ChessAI:
     def __init__(self, clf_name, save=False):
         self.clf_name = clf_name
-        self.clf_file_name = clf_name + ".pkl"
-        self.stats_file_name = clf_name + ".stats.pkl"
+        self.clf_file_name = "clfs/" + clf_name + ".pkl"
+        self.stats_file_name = "clfs/" + clf_name + ".stats.pkl"
 
         self.save = save
 
@@ -99,38 +100,23 @@ class ChessAI:
         print("saving stats")
         joblib.dump(self.stats, filename=self.stats_file_name)
 
+
+    # take board as 64 vector
     def predict_win_prob_white(self, board):
         return self.clf.predict_proba(board)
 
 
 if __name__ == "__main__":
-    ai = ChessAI("test_clf", True)
+    ai = ChessAI("test_clf_65", True)
 
     #boards_resign = np.load("boards_resign.npy")
-    #boards_mate = np.load("boards_mate.npy")
+    boards_mate = np.load("boards_mate_with_turn.npy")
     #print(ai.clf.get_params())
     # ai.clf.set_params(max_iter=1)
 
-    #ai.train_clf(boards_mate[:,1:],boards_mate[:,0], manual=True, mini_batch_size=10)
+    ai.train_clf(boards_mate[:,1:],boards_mate[:,0])
 
-    #print(ai.make_batches([1,2,3,4,5], 1))
 
-    moves = "e4 e5 Nf3 Nc6 Bc4 Nf6 Nc3 Bc5 O-O O-O Ne1 Ne8 Qf3 Qg5 d4 Qg6 dxc5 Nd4 Qd1 d6 g3 Bh3 Nf3 Bxf1 Qxf1 Nxf3+ Kg2 Nh4+ Kh1"
-    moves += " Nf3 Nd5 Qe6 Nxc7 Qc8 Nxa8 Qxa8 cxd6 Nxd6 Be2 Nd4 Bd3 Qc8 c3 Ne6 Qe1 Nc4 Bxc4 Qxc4 b3 Qc6 Ba3 Rd8 Be7 Rd7 Ba3 Ng5 Qd2"
-    moves += " Rxd2 Kg2 Qxe4+ Kf1 Qe2+ Kg2 Qxf2+ Kh1 Qxh2#"
-    moves = moves.split(" ")
-
-    board = chess.Board()
-
-    for move in moves:
-        board.push_san(move)
-    print(board)
-    #board.push_san("e4")
-    #board.push_san("e6")
-    #board.push_san("Nh3")
-    board_vect = ChessUtils.board_to_vector(board).reshape((1,-1))
-    print(board_vect)
-    print(ai.predict_win_prob_white(board_vect))
 
 # looks like pred[1] seems to be whites winning prob
 # pred[0] black? YES!
