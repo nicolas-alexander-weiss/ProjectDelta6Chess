@@ -1,5 +1,7 @@
 # ProjectDelta6Chess
 
+Part of the Word-1st Conference, initiated by Konstantinos Kalaitzidis, Foothill College
+
 ABSTRACT:
 
 Due to increasing computing power and rising interest in the application of machine learning, especially Deep Learning, success stories of AI seem to appear everywhere. 
