@@ -11,7 +11,7 @@ color = {True: "white", False:" black"}
 mltpl = {True: 1, "white": 1, False: -1, "black": -1}
 
 # labels * -1 if black wins
-labels = {"draw": 0, "resign": 0.75, "mate": 1}
+labels = {"draw": 0, "resign": 0.75, "mate": 5}
 
 # X structure:
 # castling indicator if still possible as true/false -> 1/0
@@ -23,10 +23,10 @@ labels = {"draw": 0, "resign": 0.75, "mate": 1}
 
 training_data_beg = np.array([
                      # board
-                     4., 2., 3., 5., 6., 3., 2., 4., 1., 1., 1., 1., 1., 1., 1., 1., 0., 0.,
+                     4/6, 2/6, 3/6, 5/6, 6/6, 3/6, 2/6, 4/6, 1/6, 1/6, 1/6, 1/6, 1/6, 1/6, 1/6, 1/6, 0, 0,
                      0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
-                     0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., -1., -1., -1., -1., -1., -1.,
-                     -1., -1., -4., -2., -3., -5., -6., -3., -2., -4.,
+                     0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., -1/6, -1/6, -1/6, -1/6, -1/6, -1/6,
+                     -1/6, -1/6, -4/6, -2/6, -3/6, -5/6, -6/6, -3/6, -2/6, -4/6,
                      # flags
                      1, 1, 1, 1, 0,
                      # turn indicator
@@ -53,7 +53,8 @@ class PlayChess:
 
         # play game first
         while not self.board.is_game_over():
-
+            if self.verbose:
+                print(self.board.fen())
             # print("at turn:", color[self.board.turn])
             white_at_turn = self.board.turn
 
@@ -64,20 +65,20 @@ class PlayChess:
             best_val = self.ai.clf.predict([self.get_feature_vector(self.board)])[0]
             if self.board.is_checkmate():
                 best_val = mltpl[white_at_turn] * 1000000
-            elif self.board.can_claim_draw():
-                best_val = mltpl[not self.board.turn] * -1000000
+            elif self.board.is_game_over(claim_draw=True):
+                best_val = mltpl[white_at_turn] * -1000000
 
             self.board.pop()
-
+            # print(best_val)
             for i in range(1, len(possible_moves),1):
                 self.board.push(possible_moves[i])
                 feature_vector = self.get_feature_vector(self.board)
                 val = self.ai.clf.predict([feature_vector])[0]
-                #print(val)
+                # print(val)
                 if self.board.is_checkmate():
                     val = mltpl[white_at_turn] * 1000000
-                elif self.board.can_claim_draw():
-                    val = mltpl[not self.board.turn] * -1000000
+                elif self.board.is_game_over(claim_draw=True):
+                    val = mltpl[white_at_turn] * -1000000
 
                 if white_at_turn and val > best_val:
                     best_val = val
@@ -106,7 +107,7 @@ class PlayChess:
             print("GameOver, Checkmate, Winner:", not self.board.turn)
         else:
             print("GameOver, draw")
-        print("rounds:", self.board.fullmove_number, "board:\n", self.board.fen())
+        print("rounds:", self.board.fullmove_number, "board:", self.board.fen())
 
 
 
@@ -128,7 +129,7 @@ class PlayChess:
             piece = board.piece_at(i)
             if piece is None:
                 continue
-            feature_vector[i] = ChessUtils.sym_to_int[piece.symbol()]
+            feature_vector[i] = ChessUtils.sym_to_int[piece.symbol()] / 6
 
         feature_vector[64] = board.has_queenside_castling_rights(True)
         feature_vector[65] = board.has_kingside_castling_rights(True)
@@ -146,6 +147,6 @@ class PlayChess:
         file.close()
 
 if __name__ == "__main__":
-    game = PlayChess("reg70_0.2", verbose=False)
-    for i in range(0,100,1):
+    game = PlayChess("reg70_0.3_normalized", verbose=False)
+    for i in range(0,1,1):
         game.comp_vs_comp()
