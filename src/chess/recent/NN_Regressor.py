@@ -38,8 +38,8 @@ stats_index = {"num_trained_examples": 0}
 class NN_Regressor:
     def __init__(self, clf_name, save=False):
         self.clf_name = clf_name
-        self.clf_file_name = "clfs/" + clf_name + ".pkl"
-        self.stats_file_name = "clfs/" + clf_name + ".stats.pkl"
+        self.clf_file_name = "src/chess/recent/clfs/" + clf_name + ".pkl"
+        self.stats_file_name = "src/chess/recent/clfs/" + clf_name + ".stats.pkl"
         self.save = save
 
         self.clf = self.load_clf()

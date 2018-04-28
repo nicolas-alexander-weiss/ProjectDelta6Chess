@@ -1,4 +1,5 @@
 
+
 import numpy as np
 
 import chess
@@ -111,7 +112,7 @@ class PlayChess:
 
         # training
         if self.train:
-            self.ai.train_clf(self.acc_training_data, self.acc_labels)
+            self.ai.train_clf(self.acc_training_data, np.ravel(self.acc_labels))
 
     def comp_vs_human(self, own_color=True):
         self.board = chess.Board()
@@ -123,13 +124,14 @@ class PlayChess:
             if self.board.turn == own_color:
                 move = input("Please enter your move: ")
                 try:
-                    if chess.Move.from_uci(move) not in self.board.legal_moves:
+                    if self.board.parse_san(move) not in self.board.legal_moves:
                         print("These are the legal moves: ", self.board.legal_moves)
                         continue
                 except ValueError:
+                    print("These are the legal moves: ", self.board.legal_moves)
                     continue
                 self.acc_training_data = np.vstack((self.acc_training_data, self.get_feature_vector(self.board)))
-                self.board.push_uci(move)
+                self.board.push_san(move)
             else:
                 white_at_turn = self.board.turn
 
@@ -184,7 +186,7 @@ class PlayChess:
 
         # training
         if self.train:
-            self.ai.train_clf(self.acc_training_data, self.acc_labels)
+            self.ai.train_clf(self.acc_training_data, np.ravel(self.acc_labels))
 
     def get_label(self, board):
         # board = chess.Board(board)
@@ -216,9 +218,3 @@ class PlayChess:
                      + chess.svg.board(self.board) + "</body></html>"
         file.write(print_this)
         file.close()
-
-if __name__ == "__main__":
-    game = PlayChess("reg70_0.3_normalized_v2", verbose=False)
-    for i in range(0, 500, 1):
-        game.comp_vs_comp()
-    print("Trained on a total of", game.ai.stats[0], "board positions")
