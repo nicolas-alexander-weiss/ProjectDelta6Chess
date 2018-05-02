@@ -1,0 +1,13 @@
+while not converged:
+    play game:
+        evaluate boards using current state of NN;
+    get feedback:
+        map boards of game with game outcome;
+    incorporate feedback:
+        compare NN predictions on the boards with actual outcome;
+        optimize NN parameters so predictions match outcome more closely;
+
+        (SGD --> perform only small amount of iterations so feedback is not )
+        (            too strongly incorporated                              )
+
+
